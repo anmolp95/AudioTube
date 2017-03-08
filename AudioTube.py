@@ -1,8 +1,8 @@
 import json
 import pafy
-import shutil
 from urllib2 import urlopen
-
+import time
+import traceback
 API_KEY="AIzaSyDR4qtKowtX9gAbDMrg4C5suHKRe2L3fj4"
 BASE_URL="https://www.googleapis.com/youtube/v3/search?"
 class Audio:
@@ -11,10 +11,11 @@ class Audio:
     def getID(self):
         return self.id
     def populate(self,audio,duration):
-        self.title=audio[3].title
+        index=min(len(audio)-1,3)
+        self.title=audio[index].title
         self.duration=duration
-        self.size=audio[3].get_filesize()
-        self.type=audio[3].extension
+        self.size=audio[index].get_filesize()
+        self.type=audio[index].extension
     def show(self):
         print "Title:",self.title
         print "Duration:",self.duration
@@ -38,21 +39,34 @@ def getAudio(response):
 
 typ="video"
 maxResults=str(5)
-query=raw_input("")
+query=raw_input("Enter Song's Name:")
+tokens=query.split(' ')
+finalQ=""
+count=0
+for token in tokens:
+    if count==0:
+        finalQ=token
+        count+=1
+    else:
+        finalQ=finalQ+'%20'+token
 part="snippet"
-filter = [("type",typ),("maxResults",maxResults),("q",query),("key",API_KEY),("part",part)]
+filter = [("type",typ),("maxResults",maxResults),("q",finalQ),("key",API_KEY),("part",part)]
 req=createAPIURL(filter)
-print req
+#print req
+print "######Fetched Songs######"
 gt=None
 ct=0
+link="https://www.googleapis.com/youtube/v3/search?type=video&maxResults=5&q=%22kuch%20toh%20bata%20zindagi%22&key=AIzaSyDR4qtKowtX9gAbDMrg4C5suHKRe2L3fj4&part=snippet"
 while 1:
     try:
         #gt=requests.get(req)
         gt=urlopen(req).read()
         break
     except:
+        """print traceback.print_exc()"""
         ct+=1
-        print "try",ct
+        print "retry after 10 seconds",ct
+        time.sleep(10)
         if ct>5:
             print "Some Other time"
             exit(1)
@@ -65,11 +79,14 @@ for item in x["items"]:
     audio=video.audiostreams
     audioData.populate(audio,video.duration)
     audioData.show()
-    print "Want to download(y/n)"
+    print "Want to download(y/n/e=exit)"
     yn=raw_input("")
     if yn=="y":
-        downloadFile=audio[3]
+        index=min(len(audio)-1,3)
+        downloadFile=audio[index]
         break
+    elif  yn=="e":
+        exit(1)
 try:
     print "Downloading"
     downloadFile.download(".\Songs")
