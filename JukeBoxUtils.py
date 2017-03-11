@@ -50,12 +50,18 @@ def getVideoStats(request):
             continue
     youtubeResponse=json.loads(jsonResponse)
     stats=[]
+    def checkSanity(ytResposne,key1,key2):
+        if key2 in ytResponse[key1]:
+            return ytResponse[key1][key2]
+        else:
+            return 1
+
     for ytResponse in youtubeResponse["items"]:
         videoStats=[]
-        videoStats.append(ytResponse["contentDetails"]["duration"])
-        videoStats.append(ytResponse["statistics"]["viewCount"])
-        videoStats.append(ytResponse["statistics"]["likeCount"])
-        videoStats.append(ytResponse["statistics"]["dislikeCount"])
+        videoStats.append(checkSanity(ytResponse,"contentDetails","duration"))
+        videoStats.append(checkSanity(ytResponse,"statistics","viewCount"))
+        videoStats.append(checkSanity(ytResponse,"statistics","likeCount"))
+        videoStats.append(checkSanity(ytResponse,"statistics","dislikeCount"))
         stats.append(videoStats)
     return stats
 def getAudioList(request):
@@ -134,10 +140,13 @@ def unique(globalSuggestion):
     print "here",len(uniqueGlobalSuggestions)
     return uniqueGlobalSuggestions
 
-
 def getBestAudioStream(video):
     audio=video.audiostreams
+    print len(audio)
     index=min(len(audio)-1,3)
+    print index
     return audio[index]
+
+
 
 

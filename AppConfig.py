@@ -5,8 +5,8 @@ maxSuggestions=20
 maxGlobalSuggestions=100
 
 #directories
-ffmpegLocation="\StreamingEngines\ffmpeg"
-ffplayLocation="\StreamingEngines\ffplay"
+ffmpegLocation="StreamingEngines\\ffmpeg"
+ffplayLocation="StreamingEngines\\ffplay"
 streamLocation="Stream"
 SongsLocation="Songs"
 playlistLocation="Playlist"
@@ -20,6 +20,8 @@ SEARCH_BASE_URL="https://www.googleapis.com/youtube/v3/search?"
 SUGGEST_BASE_URL="https://www.googleapis.com/youtube/v3/search?"
 VIDEO_BASE_URL="https://www.googleapis.com/youtube/v3/videos?"
 
+extension=".mp3"
+streamDelay=5 #in seconds
 isGlobalSuggestionFeature=False
 def isGlobalSuggestion():
     return isGlobalSuggestionFeature

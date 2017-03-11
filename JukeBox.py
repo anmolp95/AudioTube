@@ -33,6 +33,7 @@ class JukeBox:
             audio=Audio.Audio(audioIdList[i],audioTitleList[i],videoStats)
             audioList.append(audio)
         return audioList
+
     def suggestion(self,audioObject,addToGlobal=AppConfig.isGlobalSuggestion()):
         typ="video"
         maxResults=str(AppConfig.getmaxSuggestion())
@@ -53,6 +54,7 @@ class JukeBox:
     def getGlobalSuggestions(self):
         globalSuggestions=JUtils.getGlobalSuggestionArray()
         return globalSuggestions
+
     def videoStatList(self, idList):
         typ="video"
         part="statistics,contentDetails"
@@ -63,9 +65,19 @@ class JukeBox:
         videoStats=JUtils.getVideoStats(requestURL)
         return videoStats
 
+    def prepare(self,audioObject):
+        video=pafy.new(audioObject.id)
+        bestAudioStream=JUtils.getBestAudioStream(video)
+        audioObject.populateStreamInfo(bestAudioStream)
+
 n=JukeBox(AppConfig.getAPIKEY(),AppConfig.maxResults,AppConfig.maxSuggestions)
-x=n.search("KK tumhi ho")
-sugg=n.suggestion(x[0])
-fg=n.getGlobalSuggestions()
-for f in fg:
-    f.show()
+query=raw_input("Song:")
+x=n.search(query)
+for i in range(len(x)):
+    x[i].show()
+    yn=raw_input("")
+    if yn!="y":
+        continue
+    n.prepare(x[i])
+    print x[i].isPrepared()
+    x[i].stream()
